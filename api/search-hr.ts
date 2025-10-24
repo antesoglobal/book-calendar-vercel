@@ -5,13 +5,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
-
+  
   const { name, department } = req.body || {};
 
   const url = new URL("https://script.google.com/macros/s/AKfycbyoCnffZV75cqBVjhDtkKD-zuAGx9_7v0geCLYaVpPn0WtwclY0g-I49IATH5GFh838/exec");
 
   if (name) url.searchParams.append("name", name);
   if (department) url.searchParams.append("department", department);
+
+  console.log("Search-HR called with:", name, department); // 👈 log để hiện trong Vercel
 
   try {
     const response = await fetch(url.toString());
