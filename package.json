@@ -1,0 +1,7 @@
+{
+  "name": "calendar-booker-api",
+  "type": "module",
+  "dependencies": {
+    "@vercel/node": "^1.15.1"
+  }
+}
