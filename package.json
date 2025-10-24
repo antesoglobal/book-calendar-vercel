@@ -2,6 +2,15 @@
   "name": "calendar-booker-api",
   "type": "module",
   "dependencies": {
-    "@vercel/node": "^1.15.1"
-  }
+    "@vercel/node": "^1.15.4"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
