@@ -2,7 +2,8 @@
   "name": "calendar-booker-api",
   "type": "module",
   "dependencies": {
-    "@vercel/node": "^1.15.4"
+    "@vercel/node": "^1.15.4",
+    "node-fetch": "^3.3.2"
   },
   "version": "1.0.0",
   "main": "index.js",
@@ -12,5 +13,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@vercel/build-utils": "^12.2.0",
+    "@vercel/routing-utils": "^5.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }
