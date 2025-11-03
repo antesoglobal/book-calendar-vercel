@@ -32,12 +32,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const filtered = json.results.filter((record: any) => {
-      const fullName = record.fullName ?? record["Họ & Tên"] ?? "";
-      const dept = record.department ?? record["Phòng ban"] ?? "";
+      // fallback key names
+      const fullName = record.fullName ?? record["H\u1ed9 & T\u00ean"] ?? record["Ho & Ten"] ?? "";
+      const dept = record.department ?? record["Ph\u00f2ng ban"] ?? record["Phong ban"] ?? "";
 
-      const matchName = name ? normalize(fullName).includes(normalize(name)) : true;
-      const matchDept = department ? normalize(dept).includes(normalize(department)) : true;
-      return matchName && matchDept;
+      return (!name || normalize(fullName).includes(normalize(name))) &&
+        (!department || normalize(dept).includes(normalize(department)));
     });
 
     return res.status(200).json({ count: filtered.length, results: filtered });
