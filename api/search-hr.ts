@@ -25,6 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const raw = await response.text();  // Lấy dạng text trước
     // console.log("📄 Raw GAS response:");
     // console.log(raw);
+    console.log("Params printing...");
     console.log("🔍 Params received:", { name, department });
 
     let json;
