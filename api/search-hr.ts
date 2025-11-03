@@ -13,6 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { name = '', department = '' } = req.body || {};
+  console.log("🔍 Params received:", { name, department });
 
   try {
     // Gửi yêu cầu lấy toàn bộ data từ GAS
