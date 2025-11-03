@@ -53,7 +53,7 @@ function filterRecords(records: any[], name: string, department: string) {
 async function run() {
   const allRecords = await fetchAllHRRecordsFromGAS();
 
-  const searchName = "Quỳnh";        // 👈 thay đổi để test
+  const searchName = "Cúc";        // 👈 thay đổi để test
   const searchDept = "";      // 👈 hoặc để "" nếu chỉ tìm theo tên
 
   const filtered = filterRecords(allRecords, searchName, searchDept);
