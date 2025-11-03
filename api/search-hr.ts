@@ -47,6 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const filtered = json.results.filter((record: any) => {
       const matchName = name ? normalize(record.fullName).includes(normalize(name)) : true;
       const matchDept = department ? normalize(record.department).includes(normalize(department)) : true;
+      console.log(`🧪 Checking: ${record.fullName} (${record.department}) → Name match: ${matchName}, Dept match: ${matchDept}`);
       return matchName && matchDept;
     });
 
