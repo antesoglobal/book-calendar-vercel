@@ -45,8 +45,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Lọc lại theo name / department
     const filtered = json.results.filter((record: any) => {
-      const matchName = name ? normalize(record.fullName).includes(normalize(name)) : true;
-      const matchDept = department ? normalize(record.department).includes(normalize(department)) : true;
+      const fullName = record["Họ & Tên"] || "";
+      const departmentName = record["Phòng ban"] || "";
+      const matchName = name ? normalize(fullName).includes(normalize(name)) : true;
+      const matchDept = department ? normalize(departmentName).includes(normalize(department)) : true;
+
+      // const matchName = name ? normalize(record.fullName).includes(normalize(name)) : true;
+      // const matchDept = department ? normalize(record.department).includes(normalize(department)) : true;
       console.log(`🧪 Checking: ${record.fullName} (${record.department}) → Name match: ${matchName}, Dept match: ${matchDept}`);
       return matchName && matchDept;
     });
