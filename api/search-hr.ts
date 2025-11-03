@@ -23,6 +23,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const json = await response.json();
+    const raw = await response.text();
+    console.log("📄 Raw response:");
+    console.log(raw);
+
 
     if (!Array.isArray(json.results)) {
       return res.status(500).json({ error: 'Invalid response format from GAS' });
