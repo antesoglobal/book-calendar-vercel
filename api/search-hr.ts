@@ -23,9 +23,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const json = await response.json();
-    const raw = await response.text();
+    // const raw = await response.text();
     console.log("📄 Raw response:");
-    console.log(raw);
+    console.log(json);
 
 
     if (!Array.isArray(json.results)) {
