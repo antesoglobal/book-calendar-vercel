@@ -22,11 +22,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify({ mode: 'ALL' })
     });
 
-    const json = await response.json();
-    // const raw = await response.text();
-    console.log("📄 Raw response:");
-    // console.log(json);
-    console.log("❗ Data sample from GAS:", json.results.slice(0,5));
+    const raw = await response.text();  // Lấy dạng text trước
+    console.log("📄 Raw GAS response:");
+    console.log(raw);
+
+    let json;
+    try {
+      json = JSON.parse(raw);  // Sau đó parse nếu có thể
+    } catch (err) {
+      return res.status(500).json({
+        error: 'Failed to parse JSON',
+        raw,
+        detail: (err as Error).message
+      });
+    }
 
     if (!Array.isArray(json.results)) {
       return res.status(500).json({ error: 'Invalid response format from GAS' });
