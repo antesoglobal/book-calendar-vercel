@@ -1,10 +1,10 @@
 // api/search-hr.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwzCF8KSk6t4NPufiL1m-PV0GfHc2QCTB9qzh9GcJhR5BVm8kmia7csKX8VY1PpBgr0/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwzCF8KSk6t4NPufiL1m‑PV0GfHc2QCTB9qzh9GcJhR5BVm8kmia7csKX8VY1PpBgr0/exec';
 
 function normalize(str: string): string {
-  return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+  return str ? str.normalize("NFD").replace(/[\u0300‑\u036f]/g, "").toLowerCase() : "";
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -15,27 +15,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { name = '', department = '' } = req.body || {};
 
   try {
-    // Gửi yêu cầu lấy toàn bộ data từ GAS
     const response = await fetch(GAS_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content‑Type': 'application/json' },
       body: JSON.stringify({ mode: 'ALL' })
     });
 
     const json = await response.json();
-    // const raw = await response.text();
-    console.log("📄 Raw response:");
-    // console.log(json);
-    console.log("❗ Data sample from GAS:", json.results.slice(0,5));
+
+    console.log("📄 Raw data from GAS:", JSON.stringify(json, null, 2));
+    const first = Array.isArray(json.results) && json.results.length > 0 ? json.results[0] : null;
+    console.log("🔍 First record keys:", first ? Object.keys(first) : "no records");
 
     if (!Array.isArray(json.results)) {
-      return res.status(500).json({ error: 'Invalid response format from GAS' });
+      return res.status(500).json({ error: 'Invalid response format from GAS', raw: json });
     }
 
-    // Lọc lại theo name / department
     const filtered = json.results.filter((record: any) => {
-      const matchName = name ? normalize(record.fullName).includes(normalize(name)) : true;
-      const matchDept = department ? normalize(record.department).includes(normalize(department)) : true;
+      const fullName = record.fullName ?? record["Họ & Tên"] ?? "";
+      const dept = record.department ?? record["Phòng ban"] ?? "";
+
+      const matchName = name ? normalize(fullName).includes(normalize(name)) : true;
+      const matchDept = department ? normalize(dept).includes(normalize(department)) : true;
       return matchName && matchDept;
     });
 
