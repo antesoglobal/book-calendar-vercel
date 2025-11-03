@@ -1,54 +1,50 @@
-// api/search-hr.ts
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fetch from "node-fetch";
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwzCF8KSk6t4NPufiL1m-PV0GfHc2QCTB9qzh9GcJhR5BVm8kmia7csKX8VY1PpBgr0/exec";
+
+const normalize = (str: string = "") =>
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+function filter(records: any[], name: string, department: string) {
+  return records.filter((r) => {
+    const matchName = name ? normalize(r["Họ & Tên"] || "").includes(normalize(name)) : true;
+    const matchDept = department ? normalize(r["Phòng ban"] || "").includes(normalize(department)) : true;
+    return matchName && matchDept;
+  });
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed. Use POST." });
+    return res.status(405).json({ error: "Only POST method is allowed." });
   }
-  
-  const { name, department } = req.body || {};
-  
-  console.log("Search-HR called with:", name, department); // 👈 log để hiện trong Vercel
-  
-  // const url = new URL("https://script.google.com/macros/s/AKfycbyoCnffZV75cqBVjhDtkKD-zuAGx9_7v0geCLYaVpPn0WtwclY0g-I49IATH5GFh838/exec");
-  // const url = new URL("https://script.google.com/macros/s/AKfycbyjEv7egzYsIwsBmzNd0VPKPH33mCXRhTYUMJIRUHbap7bHA4h_55NfgKb0IqvWm9sH/exec");
-  const url = new URL("https://script.google.com/macros/s/AKfycbx0JuYi-5OpbbSLrzijL_fCa1hMewXn5ieMPxAjPY3DZ8qTBfXzMCxHOCeXrw-Ni-fS/exec");
-  
-  
 
-  if (name) url.searchParams.append("name", name);
-  if (department) url.searchParams.append("department", department);
-
-  
+  const { name = "", department = "" } = req.body || {};
 
   try {
-    const response = await fetch(url.toString());
-    const data = await response.json();
-    res.status(200).json(data);
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "ALL", sheetName: "Human Resource" })
+    });
+
+    const raw = await response.text();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e: any) {
+      return res.status(500).json({ error: "Failed to parse JSON from GAS", raw });
+    }
+
+    const results = parsed.results || [];
+    const filtered = filter(results, name, department);
+
+    return res.status(200).json({
+      count: filtered.length,
+      results: filtered
+    });
+
   } catch (err: any) {
-    res.status(500).json({ error: "Failed to fetch HR data", detail: err.message });
+    return res.status(500).json({ error: "GAS request failed", detail: err.message });
   }
 }
-
-//
-// 👇 Add this to test locally in terminal with `ts-node` or similar
-//
-async function testCall() {
-  const testPayload = {
-    name: "quynh",          // you can change this
-    department: "media"     // optional
-  };
-
-  const response = await fetch("https://script.google.com/macros/s/AKfycbyoCnffZV75cqBVjhDtkKD-zuAGx9_7v0geCLYaVpPn0WtwclY0g-I49IATH5GFh838/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(testPayload)
-  });
-
-  const result = await response.json();
-  console.log("📄 HR Search Result:", result);
-}
-
-// uncomment this line if you want to run test from terminal
-testCall();
