@@ -9,7 +9,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vercel dev",
-    "build": "vercel build",
     "start": "vercel start",
     "test-search": "ts-node scripts/test-search.ts"
   },
