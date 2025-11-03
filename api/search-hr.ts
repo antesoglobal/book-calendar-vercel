@@ -1,50 +1,45 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+// api/search-hr.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwzCF8KSk6t4NPufiL1m-PV0GfHc2QCTB9qzh9GcJhR5BVm8kmia7csKX8VY1PpBgr0/exec";
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwzCF8KSk6t4NPufiL1m-PV0GfHc2QCTB9qzh9GcJhR5BVm8kmia7csKX8VY1PpBgr0/exec';
 
-const normalize = (str: string = "") =>
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-
-function filter(records: any[], name: string, department: string) {
-  return records.filter((r) => {
-    const matchName = name ? normalize(r["Họ & Tên"] || "").includes(normalize(name)) : true;
-    const matchDept = department ? normalize(r["Phòng ban"] || "").includes(normalize(department)) : true;
-    return matchName && matchDept;
-  });
+function normalize(str: string): string {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST method is allowed." });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Only POST allowed' });
   }
 
-  const { name = "", department = "" } = req.body || {};
+  const { name = '', department = '' } = req.body || {};
 
   try {
+    // Gửi yêu cầu lấy toàn bộ data từ GAS
     const response = await fetch(GAS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: "ALL", sheetName: "Human Resource" })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'ALL' })
     });
 
-    const raw = await response.text();
+    const json = await response.json();
 
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e: any) {
-      return res.status(500).json({ error: "Failed to parse JSON from GAS", raw });
+    if (!Array.isArray(json.results)) {
+      return res.status(500).json({ error: 'Invalid response format from GAS' });
     }
 
-    const results = parsed.results || [];
-    const filtered = filter(results, name, department);
-
-    return res.status(200).json({
-      count: filtered.length,
-      results: filtered
+    // Lọc lại theo name / department
+    const filtered = json.results.filter((record: any) => {
+      const matchName = name ? normalize(record.fullName).includes(normalize(name)) : true;
+      const matchDept = department ? normalize(record.department).includes(normalize(department)) : true;
+      return matchName && matchDept;
     });
 
+    return res.status(200).json({ count: filtered.length, results: filtered });
   } catch (err: any) {
-    return res.status(500).json({ error: "GAS request failed", detail: err.message });
+    return res.status(500).json({
+      error: 'Failed to fetch HR data',
+      detail: err.message
+    });
   }
 }
