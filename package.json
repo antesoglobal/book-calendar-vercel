@@ -2,6 +2,7 @@
   "name": "calendar-booker-api",
   "dependencies": {
     "@vercel/node": "^1.15.4",
+    "googleapis": "^171.4.0",
     "node-fetch": "^3.3.2"
   },
   "version": "1.0.0",
@@ -10,7 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vercel dev",
     "start": "vercel start",
-    "test-search": "ts-node scripts/test-search.ts"
+    "test-search": "ts-node scripts/test-search.ts",
+    "get-token": "ts-node scripts/get-refresh-token.ts"
   },
   "keywords": [],
   "author": "",
