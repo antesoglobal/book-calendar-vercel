@@ -78,7 +78,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         pageSize,
         pageToken,
         personFields: 'names,emailAddresses,phoneNumbers,organizations,photos',
-        sortOrder: 'FIRST_NAME_ASCENDING',
       });
 
       contacts = (listRes.data.connections || []).map((p) => mapPerson(p));
