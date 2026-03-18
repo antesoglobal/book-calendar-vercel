@@ -34,7 +34,7 @@ const authUrl = oauth2Client.generateAuthUrl({
   access_type: 'offline',
   prompt: 'consent',
   scope: [
-    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/calendar',       // read + write (needed for createEvent)
     'https://www.googleapis.com/auth/contacts.readonly',
     'https://www.googleapis.com/auth/gmail.readonly',
   ],
