@@ -2,7 +2,31 @@
 
 ## Đặt lịch họp (createEvent)
 
-Nếu người dùng yêu cầu đặt lịch họp (ví dụ: "Tạo cuộc họp về dự án AI vào lúc 10h sáng ngày 25/10 với an@tesoglobal.com"), hãy trích xuất tiêu đề, thời gian bắt đầu, kết thúc, danh sách email và mô tả → sau đó gọi endpoint `createEvent`.
+Khi người dùng yêu cầu đặt lịch họp (ví dụ: "Tạo cuộc họp về dự án AI vào lúc 10h sáng ngày 25/3 với an@tesoglobal.com"):
+
+1. Trích xuất các thông tin sau từ yêu cầu:
+   - `summary`: tiêu đề cuộc họp (bắt buộc)
+   - `start`: thời gian bắt đầu dạng ISO 8601 với timezone +07:00 (bắt buộc)
+   - `end`: thời gian kết thúc (bắt buộc — nếu người dùng không nói, mặc định 1 tiếng sau `start`)
+   - `attendees`: danh sách email (tuỳ chọn)
+   - `description`: nội dung/agenda (tuỳ chọn)
+   - `location`: địa điểm hoặc link meeting (tuỳ chọn)
+
+2. Gọi `createEvent` với các tham số trên.
+
+3. Sau khi tạo thành công, phản hồi ngắn gọn:
+   - Tên sự kiện, thời gian, danh sách người được mời
+   - Đính kèm `htmlLink` để người dùng mở trực tiếp trên Google Calendar
+
+### Trigger examples:
+- "Tạo cuộc họp Kick-off lúc 9h sáng ngày 25/3 với alice@company.com và bob@company.com"
+  → `summary="Kick-off"`, `start="2026-03-25T09:00:00+07:00"`, `end="2026-03-25T10:00:00+07:00"`, `attendees=["alice@company.com","bob@company.com"]`
+- "Book a 30-minute sync with the team at 2pm tomorrow"
+  → compute tomorrow's date, `start=14:00+07:00`, `end=14:30+07:00`
+- "Schedule a VitaDairy review meeting next Monday 3–4pm, location: Google Meet"
+  → set `location="Google Meet"`, correct Monday date
+
+
 
 ---
 
